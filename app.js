@@ -1,7 +1,10 @@
-let displayValue = 0;
+let displayValue = '';
 let currentOperator = '';
 let flag = false;
-let result = document.querySelector('.result');
+let firedButton = '';
+let displayList = [];
+const dec = '.';
+const result = document.querySelector('.result');
 const operator = document.querySelectorAll('.operator');
 const numbers = document.querySelectorAll('.num');
 const clear = document.querySelector('#clear');
@@ -14,57 +17,120 @@ const multiplyBtn = document.querySelector('#multiply');
 const divideBtn = document.querySelector('#divide');
 
 
-result.innerText = displayValue;
-
-let add = (x, y) => console.log(x + y)
-
-let subtract = (x, y) => x - y
-
-let multiply = (x, y) => x * y
-
-let divide = (x, y) => x / y
-
-function operate (x, currentOperator, y) {
-    if (currentOperator === "+") {
-        add(x, y);
+let add = (x, y) => {
+    answer = (x + y); 
+    if (answer % 1 != 0) {
+        rounded = answer.toFixed(3);
+        result.textContent = rounded;
+    }   else {
+        result.textContent = answer;
     }
 }
+
+
+let subtract = (x, y) => {
+    answer = (x - y)
+    if (answer % 1 != 0) {
+        rounded = answer.toFixed(3);
+        result.textContent = rounded;
+    }   else {
+        result.textContent = answer;
+    }
+} 
+
+
+let multiply = (x, y) => {
+    answer = (x * y); 
+    if (answer % 1 != 0) {
+        rounded = answer.toFixed(3);
+        result.textContent = rounded;
+    }   else {
+        result.textContent = answer;
+    }
+}
+
+
+let divide = (x, y) => {
+    answer = (x / y);
+    if (answer % 1 != 0) {
+        rounded = answer.toFixed(3);
+        result.textContent = rounded;
+    }   else {
+        result.textContent = answer;
+    }
+} 
 
 
 // Getting the current operator
 for (let i = 0; i < operator.length; i++) {
     operator[i].addEventListener('click', () => {
-        let flag = true;
+        displayList.push(displayValue);  // Putting entered numbers into a list to calculate later
+        console.log(displayList)
+        flag = true;  
         let firedOperator = event.target.innerText;
-        currentOperator = firedOperator;
-        console.log(currentOperator);
-        operate()
-    });
-}
-
-// Getting the number that was clicked
-for (let i = 0; i < numbers.length; i++) {
-    numbers[i].addEventListener('click', () => {
-        let firedButton = event.target.innerText;
-        result.innerText = firedButton;
-        displayValue = result.innerHTML;
-        console.log(displayValue);
-        if (flag === false) {
-            console.log('ok')
-            // allow for multi digit numbers until op is pressed
+        if (firedOperator != '=') {
+            currentOperator = firedOperator;
+            console.log(`${flag} ${currentOperator}`);
+            return currentOperator;
         }
     });
 }
 
-// for (let i = 0; i < numbers.length; i++) {
-//     numbers[i].addEventListener("click", () => {
-//         while (operator.click === true) {
-//             let firedButton = event.target.innerText;
-//             result.innerText = firedButton;
-//             displayValue = result.innerHTML;
-//             console.log(displayValue);
-//         }
-//     });
-// }
+
+let countDecimals = function (value) { 
+    if ((value % 1) != 0) 
+        return value.toString().split(".")[1].length;  
+    return 0;
+};
+
+
+// Getting and displaying the numbers that were clicked
+for (let i = 0; i < numbers.length; i++) {
+    numbers[i].addEventListener('click', () => {
+        if (flag === true) {              // resetting the screen if an operator was used
+            result.textContent = '';
+        }
+        flag = false;
+        let firedButton = event.target.innerText;
+        result.textContent += firedButton;
+        displayValue = result.textContent;
+        console.log(displayValue);
+        return displayValue;
+    });
+}
+
+
+// listen for = then call the correct function
+equals.addEventListener('click', (x, y) => {
+    x = parseFloat(displayList[0]);
+    y = parseFloat(displayList[1]);
+    console.log(x, y, currentOperator)
+    if (currentOperator === "+") {
+        add(x, y);
+    }   else if (currentOperator === "-") {
+        subtract(x, y);
+    }   else if (currentOperator === "x") {
+        multiply(x, y);
+    }   else if (currentOperator === "%") {
+        divide(x, y);
+    }
+})
+
+clear.addEventListener('click', () => {
+    displayValue = 0;
+    currentOperator = '';
+    displayList = [];
+    result.textContent = '';
+})
+
+// decimal.addEventListener('click', () => {
+//     addDec = displayValue.concat(dec);
+//     console.log(addDec)
+//     return addDec;
+// })
+
+
+
+
 
 

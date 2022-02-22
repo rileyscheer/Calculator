@@ -17,7 +17,6 @@
     border: solid 2px black;
 }
 
-
 .result {
     color: black;
     text-align: right;
@@ -58,12 +57,38 @@ button {
     background-color: white;
 }
 
+.cd button {
+    width: 230px;
+}
+
+/* All button colors */
+
+.operator {
+    background-color: #60D6FF;
+}
+
+#equals {
+    background-color: #56FF7D;
+}
+
+#equals:hover {
+    background-color: #86FFA2;
+}
+
+.operator:hover {
+    background-color: #9DE6FF;
+}
+
 button:hover {
     background-color: #DADADA;
 }
 
-.cd button {
-    width: 230px;
+#decimal {
+    background-color: #E5FF86;
+}
+
+#decimal:hover {
+    background-color: #EEFFB1;
 }
 
 #clear {
