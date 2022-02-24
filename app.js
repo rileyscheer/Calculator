@@ -1,10 +1,10 @@
-let displayValue = '';
-let currentOperator = '';
-let flag = false;
-let firedButton = '';
-let displayList = [];
-const dec = '.';
+let currentOperator = null;
+let firstOperator = '';
+let secondOperator = '';
+let reset = false;
+
 const result = document.querySelector('.result');
+const last = document.querySelector('.last');
 const operator = document.querySelectorAll('.operator');
 const numbers = document.querySelectorAll('.num');
 const clear = document.querySelector('#clear');
@@ -18,119 +18,96 @@ const divideBtn = document.querySelector('#divide');
 
 
 let add = (x, y) => {
-    answer = (x + y); 
-    if (answer % 1 != 0) {
-        rounded = answer.toFixed(3);
-        result.textContent = rounded;
-    }   else {
-        result.textContent = answer;
-    }
+    return x + y;
 }
 
 
 let subtract = (x, y) => {
-    answer = (x - y)
-    if (answer % 1 != 0) {
-        rounded = answer.toFixed(3);
-        result.textContent = rounded;
-    }   else {
-        result.textContent = answer;
-    }
+    return x - y;
 } 
 
 
 let multiply = (x, y) => {
-    answer = (x * y); 
-    if (answer % 1 != 0) {
-        rounded = answer.toFixed(3);
-        result.textContent = rounded;
-    }   else {
-        result.textContent = answer;
-    }
+    return x * y;
 }
 
 
 let divide = (x, y) => {
-    answer = (x / y);
-    if (answer % 1 != 0) {
-        rounded = answer.toFixed(3);
-        result.textContent = rounded;
-    }   else {
-        result.textContent = answer;
-    }
+    return x / y;
 } 
 
 
-// Getting the current operator
-for (let i = 0; i < operator.length; i++) {
-    operator[i].addEventListener('click', () => {
-        displayList.push(displayValue);  // Putting entered numbers into a list to calculate later
-        console.log(displayList)
-        flag = true;  
-        let firedOperator = event.target.innerText;
-        if (firedOperator != '=') {
-            currentOperator = firedOperator;
-            console.log(`${flag} ${currentOperator}`);
-            return currentOperator;
-        }
-    });
-}
-
-
-let countDecimals = function (value) { 
-    if ((value % 1) != 0) 
-        return value.toString().split(".")[1].length;  
-    return 0;
-};
-
-
-// Getting and displaying the numbers that were clicked
-for (let i = 0; i < numbers.length; i++) {
-    numbers[i].addEventListener('click', () => {
-        if (flag === true) {              // resetting the screen if an operator was used
-            result.textContent = '';
-        }
-        flag = false;
-        let firedButton = event.target.innerText;
-        result.textContent += firedButton;
-        displayValue = result.textContent;
-        console.log(displayValue);
-        return displayValue;
-    });
-}
-
-
-// listen for = then call the correct function
-equals.addEventListener('click', (x, y) => {
-    x = parseFloat(displayList[0]);
-    y = parseFloat(displayList[1]);
-    console.log(x, y, currentOperator)
-    if (currentOperator === "+") {
-        add(x, y);
-    }   else if (currentOperator === "-") {
-        subtract(x, y);
-    }   else if (currentOperator === "x") {
-        multiply(x, y);
-    }   else if (currentOperator === "%") {
-        divide(x, y);
+function populateDisplay(number){
+    if (reset.textContent === '0' || reset) {
+        resetScreen()
     }
-})
+    result.textContent += number;
+}
 
-clear.addEventListener('click', () => {
-    displayValue = 0;
-    currentOperator = '';
-    displayList = [];
+
+function setOperation(operator) {
+    if (currentOperator !== null) {
+        evaluate()
+    }
+    firstOperator = result.textContent;
+    currentOperator = operator;
+    last.textContent = `${firstOperator}${currentOperator}`;
+    reset = true;
+}
+
+function resetScreen() {
     result.textContent = '';
-})
+    reset = false;
+  }
 
-// decimal.addEventListener('click', () => {
-//     addDec = displayValue.concat(dec);
-//     console.log(addDec)
-//     return addDec;
-// })
+function evaluate() {
+    if (currentOperator === null || reset) {
+        return;
+    }
+    if (currentOperator === '%' && result.textContent === '0') {
+        result.textContent = 'ERROR';
+        return;
+    }
+    secondOperator = result.textContent;
+    last.textContent = `${firstOperator} ${currentOperator} ${secondOperator} = `
+    result.textContent = roundResult(outcome(firstOperator, secondOperator));
+}
 
+function roundResult (number) {
+    return Math.round(number * 1000) / 1000
+}
 
+function outcome (x, y) {
+    x = Number(x);
+    y = Number(y);
+    console.log(`${firstOperator} ${currentOperator} ${secondOperator}`)
 
+    if (currentOperator === '+') {
+        return add(x, y);
+    }   else if (currentOperator === '-') {
+        return subtract(x, y);
+    }   else if (currentOperator === '%') {
+        return divide(x, y);
+    }   else if (currentOperator === 'x') {
+        return multiply(x, y);
+    }   
+}
 
+function clearAll () {
+    result.textContent = '';
+    last.textContent = '';
+    currentOperator = null;
+    firstOperator = '';
+    secondOperator = '';
+}
+
+numbers.forEach((button) =>
+  button.addEventListener('click', () => populateDisplay(button.textContent)))
+
+operator.forEach((button) =>
+  button.addEventListener('click', () => setOperation(button.textContent)))
+
+equals.addEventListener('click', evaluate)
+clear.addEventListener('click', clearAll)
 
 
